@@ -1,0 +1,13 @@
+{
+  "name": "dsh-workflow-plugin-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "typecheck": "corepack pnpm --dir packages/dsh-workflow-plugin run typecheck",
+    "build": "corepack pnpm --dir packages/dsh-workflow-plugin run build",
+    "test": "corepack pnpm --dir packages/dsh-workflow-plugin run test",
+  "pack": "corepack pnpm --dir packages/dsh-workflow-plugin run pack:artifact"
+  }
+}

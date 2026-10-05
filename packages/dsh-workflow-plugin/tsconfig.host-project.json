@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "./src",
+    "outDir": "./lib/types",
+    "tsBuildInfoFile": "./lib/.tsbuildinfo-host",
+    "emitDeclarationOnly": false,
+    "baseUrl": ".",
+    "paths": {
+      "@deepseek-ai/dsh-typert-protocol": ["../dsh-typert-protocol/src/index.d.ts"]
+    },
+    "types": ["node"]
+  },
+  "include": ["src/shared/**/*.ts", "src/domain/**/*.ts", "src/host/**/*.ts"],
+  "references": [{ "path": "../dsh-typert-protocol/tsconfig.json" }]
+}

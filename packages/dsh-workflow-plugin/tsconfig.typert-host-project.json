@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@deepseek-ai/dsh-typert-protocol": ["../dsh-typert-protocol/src/index.d.ts"]
+    },
+    "rootDir": "./src",
+    "outDir": "./lib/types",
+    "tsBuildInfoFile": "./lib/.tsbuildinfo-typert-host",
+    "types": ["node"]
+  },
+  "include": ["src/shared/types.ts", "src/host/remote-contract.ts"],
+  "references": [{ "path": "../dsh-typert-protocol/tsconfig.json" }]
+}
