@@ -94,7 +94,7 @@ AI 草稿命令示例：
 
 ## 升级、卸载和备份
 
-升级前停止正在运行的任务，备份 `%USERPROFILE%\.dsh\workflow-plugin`；如配置了 `DSH_HOME`，使用它下面的 `workflow-plugin`。停用并移除旧插件，安装新版本目录后重新添加和启用。确认新版本可用后再删除旧安装目录。
+升级前停止正在运行的任务，备份 `%USERPROFILE%\.dsh\workflow-plugin`；如配置了 `DSH_HOME`，使用它下面的 `workflow-plugin`。停用并移除旧插件，安装新版本目录后重新添加和启用。安装后完全退出并重新打开 Harness，以加载新版本。确认新版本可用后再删除旧安装目录。
 
 卸载时在 Harness 的插件页移除插件。工作流存档保存在 `DSH_HOME/workflow-plugin`；卸载插件不会自动删除存档，也不会删除任务输出的文件。
 
