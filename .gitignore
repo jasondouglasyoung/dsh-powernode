@@ -1,41 +1,4 @@
-# Package managers and build output
+INSTALL-PATH.txt
 node_modules/
-.pnpm-store/
-dist/
-build/
-/lib/
-/packages/dsh-workflow-plugin/lib/
-/artifacts/
-/packages/dsh-workflow-plugin/*.tgz
-coverage/
-*.tsbuildinfo
-
-# Local credentials and machine-only configuration
-.env
-.env.*
-!.env.example
-*.pem
-*.key
-secrets/
-.local/
-
-# DSH profiles, sessions, attachments, and execution data
-.dsh/
-.dsh-workflow-dev/
-.dsh-workflow-alpha/
-.dsh-workflow-integration/
-profiles/
-sessions/
-runs/
-logs/
-uploads/
-attachments/
-outputs/
-execution/
-*.session.json
-
-# Editor and OS state
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
+.env*
+*.log

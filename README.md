@@ -1,52 +1,114 @@
-# DSH 工作流插件 Alpha 预览版
+# DSH Powernode
 
-本仓库提供一个面向 DeepSeek Harness 的可安装工作流插件。当前候选为 `dsh-workflow-plugin@0.1.0-alpha.16`，目标宿主为 DSH `0.2.0-rc.2`。本次发布范围是基础可安装、可使用的 Alpha 公开预览版；原 A01—A20 全量验收矩阵保留为 v0.1 正式版历史基线，不作为本次 Alpha 的发布门槛。当前实测状态与限制见[Alpha 预览验收报告](docs/alpha-preview-acceptance.md)和[交付报告](docs/v0.1-delivery-report.md)。
+在 DeepSeek Harness 中用流程图组织 AI 任务，按依赖顺序执行，并在同一个界面查看进度、任务回复、工具调用和验收结果。
 
-> **版本发布已撤回（2026-10-05）。** GitHub 仓库保留源码，Alpha.16 Release、下载附件和发布标签已删除；当前没有公开发行安装包。已知限制包括本机普通重启失败、普通消息后草稿入口的触发源未隔离，以及测试工作区的 Windows Shell/pwsh 沙箱授权失败。以下安装与使用说明、[验收报告](docs/alpha-preview-acceptance.md)和[历史发布说明](docs/alpha-preview-release-notes.md)保留供源码评估。
-## 安装
+**当前版本：0.1.0-alpha.22。适配 Harness 内核 0.2.0-rc.2；Windows 64 位桌面版已验证。其他内核版本、macOS 和 Linux 暂未验证。**
 
-桌面端 `desktop` profile 由 DSH 应用管理。请通过应用内 **Plugins** 页面安装；不要用公开 CLI 管理桌面 profile，也不要手改 profile 文件。
+## 下载安装
 
-1. 下载最终 `.tgz` 包。
-2. 将包解压到长期保留的目录，例如 `%LOCALAPPDATA%\DSH\Plugins\dsh-workflow-plugin\0.1.0-alpha.16`。该目录不要放在临时目录、源码构建目录或会定期清理的位置。
-3. 在 DSH 左侧打开 **Plugins → 添加插件**，选择解压结果中直接包含 `package.json` 的 `package` 子目录。管理页接受插件目录，不接受 `.tgz` 文件本身。
-4. 启用插件。若 DSH 提示需重启，正常退出并重新打开应用；回到 Plugins 页检查版本和运行状态。
-5. 保留安装目录原位。桌面管理器会把本地目录链接到 profile，移动或删除目录会让已安装插件失效。
+先从 [DeepSeek Harness 官方网站](https://www.deepseek.com/en/harness/) 安装桌面应用。本插件需要 Harness，不能单独运行。生成草稿和执行任务需要网络及一个已配置、可调用的模型；手工编辑流程图不需要调用模型。
 
-也可在 PowerShell 解压：
+下载 [Windows 安装 ZIP](https://github.com/jasondouglasyoung/dsh-powernode/releases/download/v0.1.0-alpha.22/dsh-powernode-0.1.0-alpha.22-windows.zip)，也可以到 [Release 下载页](https://github.com/jasondouglasyoung/dsh-powernode/releases/tag/v0.1.0-alpha.22) 选择安装包。
 
-```powershell
-$PluginTgz = 'C:\path\to\dsh-workflow-plugin-0.1.0-alpha.16.tgz'
-$PluginInstallRoot = Join-Path $env:LOCALAPPDATA 'DSH\Plugins\dsh-workflow-plugin\0.1.0-alpha.16'
-New-Item -ItemType Directory -Force -Path $PluginInstallRoot | Out-Null
-tar.exe -xzf $PluginTgz -C $PluginInstallRoot
+1. 将 ZIP **全部解压**，不要在压缩包窗口内直接运行文件。
+2. 双击 `Install.cmd`。它会将插件复制到当前用户的长期目录，并生成 `INSTALL-PATH.txt`。不需要管理员权限，也不需要下载源码、安装 Node.js 或编译。
+3. 打开 Harness 左侧的 **插件 → 添加插件**，选择 `INSTALL-PATH.txt` 中的目录。该目录内应直接有 `package.json` 和 `lib` 文件夹。
+4. 安装完成后启用 **dsh-workflow-plugin**。左侧出现“工作流”入口，即可开始使用。
+
+默认保存位置是 `%LOCALAPPDATA%\DSH\Plugins\dsh-workflow-plugin\0.1.0-alpha.22\package`，会自动按接收者自己的 Windows 用户目录确定。桌面应用链接的是这个目录；安装后不要移动或删除它。ZIP 和原始下载解压目录可以删除。
+
+`Install.cmd` 只准备插件目录，不修改 Harness 配置、系统权限或模型设置。首次添加插件可能需要联网；模型账户或 API 密钥由你在 Harness 中自行配置，安装包不含任何账户数据。
+
+### 不运行安装脚本的方式
+
+将解压后的文件夹放在一个长期保留的位置，在 Harness 的“添加插件”中直接选择该文件夹。只要其中直接有 `package.json`、`cordis.patch.yml` 和 `lib` 即可；使用这一方式后须保留整个目录。
+
+桌面添加界面选择的是**包目录**，不是 `.tgz` 文件，也不是 `lib` 子目录。
+
+## 第一次使用
+
+1. 在 Harness 设置中配置模型，先在传统聊天中确认能收到回复。
+2. 新建会话并选择一个已存在、允许写入的工作区。首次使用建议选择空文件夹。
+3. 在聊天框输入 `/powernode`，打开当前会话的工作流；也可以点击左侧“工作流”管理已保存的流程。
+4. 在“工作流设置”中填写目标，确认工作区及输出目录。输出目录必须在工作区内。可用“选择文件夹”；目录不存在时可点击“创建输出目录”。
+5. 手工添加任务和依赖，或用 `/powernode <目标>` 生成流程草稿。检查每个任务的要求、预期产物、验收方式和连接顺序。
+6. 点击“保存”，再点击“运行”。生成草稿和保存本身都不会执行任务。
+
+AI 草稿命令示例：
+
+```text
+/powernode 创建一个三步验收流程：第一步创建 first.txt，内容精确为 STEP_1；第二步读取并核对 first.txt，然后创建 second.txt，内容精确为 STEP_2；第三步核对前两个文件，再创建 result.txt，内容精确为 TEST_PASS。所有文件放在输出目录，三个任务依次依赖，每步都采用人工验收。先生成草稿。
 ```
 
-选择 `$PluginInstallRoot\package`。卸载插件不会删除工作流存档；除非确实要清空数据，不要删除 DSH 的 `workflow-plugin` 数据目录。
+草稿生成后核对“工作流设置”中的路径，保存并运行。每个任务结束后检查对应文件，在该任务的 **节点详情 → 运行记录** 中点击 **“通过此任务”**。通过后节点变绿，才会执行依赖它的下一个任务。最终应为 `3/3`、三个绿色，`result.txt` 内容为 `TEST_PASS`。
 
-## 五分钟使用
+## 看进度和聊天
 
-1. 在 DSH 的 **Settings → Models** 选择一个可用模型，并在目标会话中选好工作区。
-2. 普通对话输入 `/powernode` 打开当前会话的工作流面板。无参数命令只打开界面，不调用模型、不创建运行。
-3. 输入目标生成可编辑草稿，例如：
+| 显示 | 含义 | 需要做什么 |
+| --- | --- | --- |
+| 灰色 | 尚未执行 | 等待前置任务 |
+| 蓝色 | 正在执行 | 查看当前任务、活动和工具调用 |
+| 黄色 | 等待授权、活动或人工验收 | 阅读等待原因，完成所需操作 |
+| 绿色 | 已通过验收 | 可以继续依赖它的任务 |
+| 红色 | 执行失败 | 阅读错误，解决后再重试 |
 
-   ```text
-   /powernode 把一个简单介绍页拆成需求整理、页面制作、结果检查三个任务，产物包含 index.html 和 style.css，先生成流程草稿，不要运行。
-   ```
+完成数只统计通过验收的任务；文件资料和提示词不计入任务数量。黄色人工验收时显示 `0/3` 并不代表首节点没有执行。
 
-   命令会显示生成状态和结果入口。打开草稿、检查任务及资料后，点击“保存”。生成草稿不会自动运行。
-4. 需要参考资料时，在工作流编辑器添加 File 或 Prompt 节点，并连到对应任务。保存后再运行；File 和 Prompt 只提供上下文，不作为任务派发。
-5. 点击“运行”后在运行详情查看任务、尝试、工具事件和产物。暂停、继续、停止、失败重试和人工验收均由用户明确操作。流程有未保存修改时，运行会提示先保存。
+在会话工作流界面右侧：
 
-`/powernode edit <修改说明>` 会生成独立差异提案。检查差异后明确点击“应用修改”或“放弃修改”；应用和运行是分开的操作。更完整的会话归属、路径边界和数据说明见包内 README 与项目验收报告。
+- **主对话**：对应原来的传统聊天，在这里发问，回复也显示在这里。
+- **节点执行**：点击流程图任务或右侧任务按钮，显示该节点的实际聊天、工具记录和授权请求。切换任务会切换聊天。
+- **返回传统对话**：回到同一个主会话；传统聊天输入区上方也能查看该流程的进度。
 
-## 开发验证
+在聊天里发送“通过”或收到模型“完成”的回复，不会代替人工验收。任务变绿由实际验收状态决定。
+
+## 修改流程与关联资料
+
+- 选中节点后编辑标题、任务要求、验收条件和预期产物；可拖动节点和连接依赖。
+- File 资料节点引用工作区内的文件；Prompt 资料节点填写附加提示词，再连接到需要它的任务。
+- 自动验收适合预期文件存在、文件包含指定文本等可明确检查的要求；需要判断结果质量时使用人工验收。
+- `/powernode edit <修改说明>` 为当前会话关联的流程生成编辑建议。检查后点击“应用修改”；不满意则放弃。修改后先保存，再运行。
+- 运行使用启动时的流程快照；编辑后的流程需要保存再启动新的运行，旧结果不能证明修改后的节点已通过。
+
+## 暂停、停止、失败重试
+
+- **暂停**：等当前任务结束，到任务边界暂停。不会把一个正在写文件的任务直接切断。
+- **继续**：恢复暂停的流程；待人工验收的任务仍需先通过验收。
+- **停止**：取消当前执行，等待清理。显示“正在停止”时不要重复启动。
+- **重试失败任务**：修复报错原因后，在节点详情的运行记录中点击。已通过的前置任务保持结果；重试不等于从头新建运行。
+- **驳回此任务**：产物不符合要求时使用。后续依赖不会提前执行。
+
+插件沿用主会话已经选择的工具权限和授权策略，不会自动提权。流程中需要 Python、编译器或其他程序时，该电脑还需要有对应可用环境。
+
+## 常见问题
+
+**安装后没有“工作流”入口**：确认插件已启用、选择的是直接包含 `package.json` 的目录，并使用适配的 Harness 内核版本。下载的是预编译包，无需执行构建命令。
+
+**节点黄色、流程没有继续**：查看右侧状态。若为“待人工验收”，核对文件后点击“通过此任务”；如果等待授权，在原生聊天中处理实际授权请求。
+
+**出现 `grantWrite` / `SetNamedSecurityInfoW`**：这是 Windows 终端沙箱初始化失败，流程会停止当前任务并保留原因。先在同一工作区的传统聊天验证相同操作。仅需文本文件读写的任务优先使用原生文件工具；需要运行程序的任务仍受 Harness 终端沙箱限制，本插件不能保证这类系统错误不会出现。
+
+**启动时报 `Web RPC failed`**：确认使用本页完整安装包，不要混用旧目录文件。若仍无法打开，可使用错误窗口提供的官方插件恢复入口，再重新添加本包；恢复入口可能备份并重置桌面 profile 配置，请阅读其提示。
+
+**切换节点看不到旧聊天**：未执行的节点还没有聊天。已执行节点可查看原生历史和保存的节点回复；旧版本产生的损坏会话可能只能查看保存回复，重试后会创建新的执行会话。
+
+## 升级、卸载和备份
+
+升级前停止正在运行的任务，备份 `%USERPROFILE%\.dsh\workflow-plugin`；如配置了 `DSH_HOME`，使用它下面的 `workflow-plugin`。停用并移除旧插件，安装新版本目录后重新添加和启用。确认新版本可用后再删除旧安装目录。
+
+卸载时在 Harness 的插件页移除插件。工作流存档保存在 `DSH_HOME/workflow-plugin`；卸载插件不会自动删除存档，也不会删除任务输出的文件。
+
+## 命令行用户
+
+桌面用户使用上面的插件管理界面。独立 Web profile 可下载 Release 中的 `.tgz`，使用已经安装的 DSH CLI：
 
 ```powershell
-corepack pnpm install
-corepack pnpm --dir packages/dsh-workflow-plugin run typecheck
-corepack pnpm --dir packages/dsh-workflow-plugin test
-corepack pnpm run pack
+dsh plugin --profile web add ./dsh-workflow-plugin-0.1.0-alpha.22.tgz
+dsh --profile web
 ```
 
-插件本地目录安装会保留链接目标，因此桌面验收也使用长期安装目录；公开安装包不依赖开发者源码目录。当前只针对 Windows 11 与 DSH `0.2.0-rc.2` 验证。其他操作系统、触屏、其他 DSH 版本、完整响应式与主题矩阵及崩溃/双宿主恢复不在本次 Alpha 验收范围。
+CLI 的 Node.js 版本需满足包中的 `engines`（Node.js 24 或更高）。这不会安装到桌面应用的 `desktop` profile。预编译包的安装方式参见 [Harness 官方插件安装文档](https://deepseek-harness.github.io/deepseek-harness/en/develop/basic/publish)。
+
+## 许可证
+
+MIT，见 [LICENSE](LICENSE)。随包组件的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

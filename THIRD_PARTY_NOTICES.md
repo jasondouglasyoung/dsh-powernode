@@ -1,9 +1,10 @@
-# Third-party notices for the bundled client
+# Third-party notices for the bundled runtime
 
-The client bundle contains portions of the packages listed below. DSH packages are external module-loader references and are supplied by the DSH installation.
+The client and host schema bundles contain portions of the packages listed below. DSH packages are external module-loader references and are supplied by the DSH installation.
 
 | Package | Version | License | Copyright |
 |---|---:|---|---|
+| `zod` | 4.6.5 | MIT | 2020 Colin McDonnell |
 | `@xyflow/react` | 12.11.6 | MIT | 2019–2025 webkid GmbH |
 | `@xyflow/system` | 0.0.82 | MIT | 2019–2025 webkid GmbH |
 | `classcat` | 5.0.5 | MIT | Jorge Bucaran |

@@ -1,6 +1,0 @@
-{
-  "extends": "./packages/dsh-workflow-plugin/tsconfig.base.json",
-  "files": [],
-  "include": [],
-  "references": [{ "path": "./packages/dsh-workflow-plugin/tsconfig.client-project.json" }]
-}

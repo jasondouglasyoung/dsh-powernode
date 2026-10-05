@@ -1,0 +1,2 @@
+71d7887c3f2c4bd1ff9b5a0e215e29d0910374d939858c1b0b98df34e7fabdbf  dsh-powernode-0.1.0-alpha.22-windows.zip
+493892fe77a766893545cec2d468aa7f638ad1845fff8182435047389975da64  dsh-workflow-plugin-0.1.0-alpha.22.tgz
