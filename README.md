@@ -2,7 +2,7 @@
 
 本仓库提供一个面向 DeepSeek Harness 的可安装工作流插件。当前候选为 `dsh-workflow-plugin@0.1.0-alpha.16`，目标宿主为 DSH `0.2.0-rc.2`。本次发布范围是基础可安装、可使用的 Alpha 公开预览版；原 A01—A20 全量验收矩阵保留为 v0.1 正式版历史基线，不作为本次 Alpha 的发布门槛。当前实测状态与限制见[Alpha 预览验收报告](docs/alpha-preview-acceptance.md)和[交付报告](docs/v0.1-delivery-report.md)。
 
-> **发布定位：Alpha.16 实验性公开预览。** 本轮开发与验收已结束，按当前包分发。已验证真实 DSH Agent 的三任务文件执行与人工验收。已知限制：本机普通重启出现过 `desktop welcome: Web RPC failed`；普通消息后出现草稿入口的触发源尚未隔离；测试工作区的 Windows Shell/pwsh 沙箱授权失败。详细记录见 [当前验收报告](docs/alpha-preview-acceptance.md) 与 [发布说明](docs/alpha-preview-release-notes.md)。
+> **版本发布已撤回（2026-10-05）。** GitHub 仓库保留源码，Alpha.16 Release、下载附件和发布标签已删除；当前没有公开发行安装包。已知限制包括本机普通重启失败、普通消息后草稿入口的触发源未隔离，以及测试工作区的 Windows Shell/pwsh 沙箱授权失败。以下安装与使用说明、[验收报告](docs/alpha-preview-acceptance.md)和[历史发布说明](docs/alpha-preview-release-notes.md)保留供源码评估。
 ## 安装
 
 桌面端 `desktop` profile 由 DSH 应用管理。请通过应用内 **Plugins** 页面安装；不要用公开 CLI 管理桌面 profile，也不要手改 profile 文件。
